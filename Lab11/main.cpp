@@ -131,48 +131,72 @@ public:
         }
     }
 
-
-    bool DFS(int inicio)
+        bool DFS(V inicio)
     {
         int pos = 0, i = 0;
         auto it = m_Grafo.find(inicio); auto ito = (it->second).begin();
         map<V,int> visitados;
         visitados[it->first] = i;
-        while(pos != -1 && tesoros.find(it->first) == tesoros.end())
+        if(tesoros.find(it->first) != tesoros.end()) return true;
+        while(pos != -1)
         {
             while(ito != (it->second).end() && visitados.find(ito->first) == visitados.end())  
             {
                 i++;
                 visitados[ito->first] = i;
                 visitado(visitados);
+                if(tesoros.find(ito->first) != tesoros.end()) return true;
                 it = m_Grafo.find(ito->first);
                 ito = (it->second).begin(); 
                 pos++;  
             }
 
-            auto aux = ito;
-            aux++;
-                cout<<"it"<<it->first<<" ";
-                cout<<"ito"<<ito->first<<endl;
+                auto aux = ito;
+                aux++;
                 if(aux != (it->second).end())  
                 {
                     ito++;
                 } else {
                     pos--;
-                    cout<<"pos: "<<pos<<" "<<visitado(visitados , pos)<<" ";
                     it = m_Grafo.find(visitado(visitados , pos));
                     ito = it->second.begin();
                 }
         }
-        if(it != m_Grafo.end() && tesoros.find(it->first) != tesoros.end()) return true;
         return false;
+    }
+
+    bool BFS(V inicio)
+    {
+        map<V,int> visitados;
+        visitados[inicio] = 0;
+        return BFS(inicio , visitados , 0 , 0);
+    }
+
+    bool BFS(V inicio , map<V,int> visitados , int i , int pos)
+    {
+        auto it = m_Grafo.find(visitado(visitados , pos));
+        for(auto ito = (it->second).begin(); ito != (it->second).end() ; ito++)
+        {
+            if(visitados.find(ito->first) == visitados.end()) {
+                i++;
+                visitados[ito->first] = i;
+                visitado(visitados);
+                if(tesoros.find(ito->first) != tesoros.end()) return true;
+            }
+        }
+
+        if(pos == i) return false;
+        else {
+            int a = pos++;
+            return BFS (inicio , visitados , i , pos);
+        }
     }
 
    
     void visitado(map<V,int> set)
     {
         
-        cout<<"vectorsito"<<endl;
+        cout<<"Vector: ";
         for(auto i = set.begin() ; i != set.end() ; i++ )
         {
             cout<<i->first<<" ";
@@ -182,16 +206,14 @@ public:
 
     int visitado(map<V,int> set , int m)
     {
-        
-        cout<<"vectorsito"<<endl;
         for(auto i = set.begin() ; i != set.end() ; i++ )
         {
              if(i->second == m) return i->first;
         }
-        cout<<endl;
     }
 
     ~Grafo() {
+        m_Grafo.clear();
     }
 };
 
